@@ -40,6 +40,8 @@ jobs:
       run: rustup toolchain link segstk-rust rust
 
     - name: Verify Correct Registration
-      run: cargo +segstk-rust --version >> echo
+      run: |
+        content=$(cargo +segstk-rust --version)
+        echo $content
 
 

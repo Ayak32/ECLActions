@@ -1,0 +1,47 @@
+name: Download Toolchain
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Restore cache
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: rust.tar.xz
+        key: ${{ runner.os }}-rust.tar.xz-${{ hashFiles('https://zyma.me/media/rust.tar.xz') }}
+        restore-keys: |
+          ${{ runner.os }}-downloaded-file-
+
+    - name: Download file if not cached
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: curl -L -o rust.tar.xz "https://zyma.me/media/rust.tar.xz"
+
+    - name: Cache downloaded file
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache@v3
+      with:
+        path: rust.tar.xz
+        key: ${{ runner.os }}-rust.tar.xz-${{ hashFiles('https://zyma.me/media/rust.tar.xz') }}
+
+    - name: Unzip file
+      run: tar -xf rust.tar.xz -d ./destination_folder
+
+    - name: register it to Cargo
+      run: rustup toolchain link segstk-rust rust
+
+    - name: Verify Correct Registration
+      run: echo << cargo +segstk-rust --version
+
+    - name: List files
+      run: ls -l ./destination_folder
+

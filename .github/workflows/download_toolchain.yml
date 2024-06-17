@@ -20,7 +20,7 @@ jobs:
         path: rust.tar.xz
         key: ${{ runner.os }}-rust.tar.xz-${{ hashFiles('https://zyma.me/media/rust.tar.xz') }}
         restore-keys: |
-          ${{ runner.os }}-downloaded-file-
+          ${{ runner.os }}-rust.tar.xz-
 
     - name: Download file if not cached
       if: steps.cache.outputs.cache-hit != 'true'
@@ -34,7 +34,7 @@ jobs:
         key: ${{ runner.os }}-rust.tar.xz-${{ hashFiles('https://zyma.me/media/rust.tar.xz') }}
 
     - name: Unzip file
-      run: tar -xf rust.tar.xz -d ./destination_folder
+      run: tar -xf rust.tar.xz
 
     - name: register it to Cargo
       run: rustup toolchain link segstk-rust rust
@@ -42,6 +42,4 @@ jobs:
     - name: Verify Correct Registration
       run: echo << cargo +segstk-rust --version
 
-    - name: List files
-      run: ls -l ./destination_folder
 
